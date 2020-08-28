@@ -28,6 +28,12 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
  * project.
  */
 public class Robot extends TimedRobot {
+
+
+  // MA'AM THIS IS A MCDONALDS DRIVE THRU YOU CAN'T BRINg EOMJIS IN HERE
+  // sorry 😋😋😋😋😃😃😃😄😅😆
+
+
   private static final String kDefaultAuto = "Default";
   private static final String kCustomAuto = "My Auto";
   private String m_autoSelected;
