@@ -10,7 +10,7 @@
   Jacob Lewis
   Zane Badgett
   Joshua P
-  Zayaan Rahman 
+  Zayaan Rahman
 
 */
 
