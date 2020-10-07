@@ -10,13 +10,10 @@
   Jacob Lewis
   Zane Badgett
   Joshua P
-<<<<<<< HEAD
   Arrio Gonsalves
 
-=======
   Zayaan Rahman
   Neeka Lin
->>>>>>> 30e54b915b16f864432c6b79e7c821ee8299db9e
 */
 
 
