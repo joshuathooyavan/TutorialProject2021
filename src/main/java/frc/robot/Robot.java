@@ -13,7 +13,7 @@
   Arrio Gonsalves
   Zayaan Rahman
   Neeka Lin
-  Gabriel Rivera
+  Fernando Tovar
 */
 
 
