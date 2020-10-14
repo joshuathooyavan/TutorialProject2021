@@ -21,8 +21,7 @@
 
 package frc.robot;
 
-import com.revrobotics.CANSparkMax;
-import com.revrobotics.CANSparkMaxLowLevel;
+import edu.wpi.first.wpilibj.*;
 
 import edu.wpi.first.wpilibj.SpeedControllerGroup;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
@@ -32,10 +31,10 @@ import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.GenericHID.Hand;
 
 public class Robot extends TimedRobot {
-  private static CANSparkMax lf = new CANSparkMax(Constants.LF_MOTOR_ID, CANSparkMaxLowLevel.MotorType.kBrushless);
-  private static CANSparkMax lb = new CANSparkMax(Constants.LB_MOTOR_ID, CANSparkMaxLowLevel.MotorType.kBrushless);
-  private static CANSparkMax rf = new CANSparkMax(Constants.RF_MOTOR_ID, CANSparkMaxLowLevel.MotorType.kBrushless);
-  private static CANSparkMax rb = new CANSparkMax(Constants.RB_MOTOR_ID, CANSparkMaxLowLevel.MotorType.kBrushless);
+  private static PWMVictorSPX lf = new PWMVictorSPX(Constants.LF_MOTOR_ID);
+  private static PWMVictorSPX lb = new PWMVictorSPX(Constants.LB_MOTOR_ID);
+  private static PWMVictorSPX rf = new PWMVictorSPX(Constants.RF_MOTOR_ID);
+  private static PWMVictorSPX rb = new PWMVictorSPX(Constants.RB_MOTOR_ID);
   
   private static SpeedControllerGroup leftSide = new SpeedControllerGroup(lf, lb);
   private static SpeedControllerGroup rightSide = new SpeedControllerGroup(rf, rb);
