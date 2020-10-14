@@ -5,6 +5,22 @@
 /* the project.                                                               */
 /*----------------------------------------------------------------------------*/
 
+<<<<<<< Updated upstream
+=======
+// Names:
+/*
+  Jacob Lewis
+  Zane Badgett
+  Joshua P
+  Arrio Gonsalves
+  Zayaan Rahman
+  Neeka Lin
+  Gabriel Rivera
+  Fernando Tovar
+  Matthew Metta
+*/
+
+>>>>>>> Stashed changes
 package frc.robot;
 
 import com.revrobotics.CANSparkMax;
@@ -12,8 +28,12 @@ import com.revrobotics.CANSparkMaxLowLevel;
 
 import edu.wpi.first.wpilibj.SpeedControllerGroup;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
+<<<<<<< Updated upstream
 
 
+=======
+import frc.robot.subsystems.Lift;
+>>>>>>> Stashed changes
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.GenericHID.Hand;
@@ -45,6 +65,7 @@ public class Robot extends TimedRobot {
   DifferentialDrive dt = new DifferentialDrive(leftSide, rightSide);
   XboxController driverController = new XboxController(0);
 
+<<<<<<< Updated upstream
 
 
   /**
@@ -95,6 +116,16 @@ public class Robot extends TimedRobot {
   /**
    * This function is called periodically during operator control.
    */
+=======
+  Lift liftControl = new Lift(driverController);
+  
+  @Override
+  public void robotInit() {
+
+  }
+
+
+>>>>>>> Stashed changes
   @Override
   public void teleopPeriodic()
   {
