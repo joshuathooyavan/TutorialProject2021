@@ -5,40 +5,19 @@
 /* the project.                                                               */
 /*----------------------------------------------------------------------------*/
 
-<<<<<<< Updated upstream
-=======
-// Names:
-/*
-  Jacob Lewis
-  Zane Badgett
-  Joshua P
-  Arrio Gonsalves
-  Zayaan Rahman
-  Neeka Lin
-  Gabriel Rivera
-  Fernando Tovar
-  Matthew Metta
-*/
-
->>>>>>> Stashed changes
 package frc.robot;
 
-import com.revrobotics.CANSparkMax;
-import com.revrobotics.CANSparkMaxLowLevel;
-
+import edu.wpi.first.wpilibj.PWMVictorSPX;
 import edu.wpi.first.wpilibj.SpeedControllerGroup;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
-<<<<<<< Updated upstream
 
-
-=======
-import frc.robot.subsystems.Lift;
->>>>>>> Stashed changes
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.GenericHID.Hand;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.robot.subsystems.Intake;
+import frc.robot.subsystems.Lift;
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -54,19 +33,18 @@ public class Robot extends TimedRobot {
   private final SendableChooser<String> m_chooser = new SendableChooser<>();
 
 
-  private static CANSparkMax lf = new CANSparkMax(Constants.LF_MOTOR_ID, CANSparkMaxLowLevel.MotorType.kBrushless);
-  private static CANSparkMax lb = new CANSparkMax(Constants.LB_MOTOR_ID, CANSparkMaxLowLevel.MotorType.kBrushless);
-  private static CANSparkMax rf = new CANSparkMax(Constants.RF_MOTOR_ID, CANSparkMaxLowLevel.MotorType.kBrushless);
-  private static CANSparkMax rb = new CANSparkMax(Constants.RB_MOTOR_ID, CANSparkMaxLowLevel.MotorType.kBrushless);
+  private static PWMVictorSPX lf = new PWMVictorSPX(Constants.LF_MOTOR_ID);
+  private static PWMVictorSPX lb = new PWMVictorSPX(Constants.LB_MOTOR_ID);
+  private static PWMVictorSPX rf = new PWMVictorSPX(Constants.RF_MOTOR_ID);
+  private static PWMVictorSPX rb = new PWMVictorSPX(Constants.RB_MOTOR_ID);
   
   private static SpeedControllerGroup leftSide = new SpeedControllerGroup(lf, lb);
   private static SpeedControllerGroup rightSide = new SpeedControllerGroup(rf, rb);
 
   DifferentialDrive dt = new DifferentialDrive(leftSide, rightSide);
   XboxController driverController = new XboxController(0);
-
-<<<<<<< Updated upstream
-
+  Lift liftControl;
+  Intake intakeControl;
 
   /**
    * This function is run when the robot is first started up and should be
@@ -77,6 +55,9 @@ public class Robot extends TimedRobot {
     m_chooser.setDefaultOption("Default Auto", kDefaultAuto);
     m_chooser.addOption("My Auto", kCustomAuto);
     SmartDashboard.putData("Auto choices", m_chooser);
+
+    liftControl = new Lift(driverController);
+    intakeControl = new Intake(driverController);
   }
 
   /**
@@ -116,16 +97,6 @@ public class Robot extends TimedRobot {
   /**
    * This function is called periodically during operator control.
    */
-=======
-  Lift liftControl = new Lift(driverController);
-  
-  @Override
-  public void robotInit() {
-
-  }
-
-
->>>>>>> Stashed changes
   @Override
   public void teleopPeriodic()
   {
