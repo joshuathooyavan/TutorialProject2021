@@ -16,8 +16,10 @@ import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.GenericHID.Hand;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+
 import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.Lift;
+import frc.robot.subsystems.Shooter;
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -43,8 +45,10 @@ public class Robot extends TimedRobot {
 
   DifferentialDrive dt = new DifferentialDrive(leftSide, rightSide);
   XboxController driverController = new XboxController(0);
+
   Lift liftControl;
   Intake intakeControl;
+  Shooter shooterControl;
 
   /**
    * This function is run when the robot is first started up and should be
@@ -58,6 +62,7 @@ public class Robot extends TimedRobot {
 
     liftControl = new Lift(driverController);
     intakeControl = new Intake(driverController);
+    shooterControl = new Shooter(driverController);
   }
 
   /**
