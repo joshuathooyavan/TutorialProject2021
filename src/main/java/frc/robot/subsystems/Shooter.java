@@ -20,6 +20,8 @@ public class Shooter
         //#region shooter
         if(controller.getXButton())
             shooterMotor.set(1);
+        else
+            shooterMotor.set(0);
         //#endregion
     }
 }
