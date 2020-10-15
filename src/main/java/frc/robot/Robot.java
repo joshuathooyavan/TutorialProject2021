@@ -16,7 +16,7 @@ import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.GenericHID.Hand;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-
+import frc.robot.subsystems.Feeder;
 import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.Lift;
 import frc.robot.subsystems.Shooter;
@@ -49,6 +49,7 @@ public class Robot extends TimedRobot {
   Lift liftControl;
   Intake intakeControl;
   Shooter shooterControl;
+  Feeder feedControl;
 
   /**
    * This function is run when the robot is first started up and should be
@@ -63,6 +64,7 @@ public class Robot extends TimedRobot {
     liftControl = new Lift(driverController);
     intakeControl = new Intake(driverController);
     shooterControl = new Shooter(driverController);
+    feedControl = new Feeder(driverController);
   }
 
   /**
