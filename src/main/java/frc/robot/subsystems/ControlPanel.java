@@ -28,7 +28,8 @@ public class ControlPanel {
     private final Color kRedTarget = ColorMatch.makeColor(0.561, 0.232, 0.114);
     private final Color kYellowTarget = ColorMatch.makeColor(0.361, 0.524, 0.113);
     
-
+    public Color gameColor = null;
+     
     /**
      * Constructs a ControlPanel object.
      * @param x the XboxController
@@ -47,44 +48,57 @@ public class ControlPanel {
     
     public void teleOp()
     { 
-        // //#region ControlPanel
-        // if(controller.getAButton() && !controller.getBButton()) 
-        //     panelMotor.set(1);
-        // else if(controller.getBButton() && !controller.getAButton())
-        //     panelMotor.set(-1);
-        // else
-        //     panelMotor.set(0);
-        // //#endregion
+        //#region ControlPanel
+        if(controller.getAButton() && !controller.getBButton())
+            rotationControl();
+        else if(controller.getBButton() && !controller.getAButton())
+            positionControl();
+        //#endregion
     }
+
+    private void rotationControl()
+    {
+        
+    }
+    
+    private void positionControl()
+    {
+        ColorMatchResult matchResult = colorMatcher.matchClosestColor(colorSensor.getColor());
+
+        while(colorSensor.getColor() != matchResult.color)  //  Josh realizes after meeting - didnt account for offset
+            panelMotor.set(1);
+
+        if (colorSensor.getColor() == gameColor)
+            panelMotor.set(0);
+    }
+
     /**
      * Gets the color of this match
      */
-    private void getGameColor()
+    public void getGameColor()
     {
         String gameData;
         gameData = DriverStation.getInstance().getGameSpecificMessage();
         if(gameData.length() > 0)
         {
-            switch (gameData.charAt(0))
+            switch (gameData.charAt(0) )
             {
                 case 'B' :
-                    //Blue case code
+                    gameColor = kBlueTarget;
                     break;
                 case 'G' :
-                    //Green case code
+                    gameColor = kGreenTarget;
                     break;
                 case 'R' :
-                    //Red case code
+                    gameColor = kRedTarget;
                     break;
                 case 'Y' :
-                    //Yellow case code
+                    gameColor = kYellowTarget;
                     break;
                 default :
-                    //This is corrupt data
+                    //This is corrupt data - Tell Shuffleboard there was an error and no color is known
                     break;
             }
-        } else {
-            //Code for no data received yet
         }
     }
 }

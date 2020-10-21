@@ -14,13 +14,11 @@ import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.GenericHID.Hand;
+
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import frc.robot.subsystems.Feeder;
-import frc.robot.subsystems.Intake;
-import frc.robot.subsystems.Lift;
-import frc.robot.subsystems.Shooter;
 
+import frc.robot.subsystems.*;
 /**
  * The VM is configured to automatically run this class, and to call the
  * functions corresponding to each mode, as described in the TimedRobot
@@ -45,12 +43,13 @@ public class Robot extends TimedRobot {
 
   DifferentialDrive dt = new DifferentialDrive(leftSide, rightSide);
   XboxController driverController = new XboxController(0);
-
+  XboxController operatorController = new XboxController(1);  
+  
   Lift liftControl;
   Intake intakeControl;
   Shooter shooterControl;
   Feeder feedControl;
-
+  ControlPanel controlPanel;
   /**
    * This function is run when the robot is first started up and should be
    * used for any initialization code.
@@ -61,10 +60,18 @@ public class Robot extends TimedRobot {
     m_chooser.addOption("My Auto", kCustomAuto);
     SmartDashboard.putData("Auto choices", m_chooser);
 
-    liftControl = new Lift(driverController);
-    intakeControl = new Intake(driverController);
-    shooterControl = new Shooter(driverController);
-    feedControl = new Feeder(driverController);
+    liftControl = new Lift(operatorController);
+    intakeControl = new Intake(operatorController);
+    shooterControl = new Shooter(operatorController);
+    feedControl = new Feeder(operatorController);
+    controlPanel = new ControlPanel(operatorController);
+  }
+
+  @Override
+  public void robotPeriodic()
+  {
+    if(controlPanel.gameColor == null)
+      controlPanel.getGameColor();
   }
 
   /**
