@@ -1,15 +1,13 @@
 package frc.robot.subsystems;
 
-import com.revrobotics.ColorSensorV3;
-import com.revrobotics.ColorMatchResult;
 import com.revrobotics.ColorMatch;
-import edu.wpi.first.wpilibj.util.Color;
-
-import edu.wpi.first.wpilibj.PWMVictorSPX;
-import edu.wpi.first.wpilibj.XboxController;
+import com.revrobotics.ColorSensorV3;
 
 import edu.wpi.first.wpilibj.DriverStation;
-
+import edu.wpi.first.wpilibj.PWMVictorSPX;
+import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.util.Color;
 import frc.robot.Constants;
 
 /**
@@ -29,6 +27,9 @@ public class ControlPanel {
     private final Color kYellowTarget = ColorMatch.makeColor(0.361, 0.524, 0.113);
     
     public Color gameColor = null;
+
+    private Timer timer = new Timer();
+    private boolean hasAlreadyStarted;
      
     /**
      * Constructs a ControlPanel object.
@@ -56,19 +57,52 @@ public class ControlPanel {
         //#endregion
     }
 
+    /**
+     * wheel go spin (but only 3-5 times
+     */
     private void rotationControl()
     {
+        double startTime = 0.0;
+        if(!hasAlreadyStarted) {
+            timer.start();
+            panelMotor.set(0.5);
+            startTime = timer.get();
+            hasAlreadyStarted = true;
+        }
         
+        //"timeInterval" would be some amount we experiment for
+        if(timer.get() - startTime > 20.0 /*Needs to be tested for later*/ ) {
+            timer.stop();
+            panelMotor.set(0);
+            hasAlreadyStarted = false;
+        }
     }
     
+    /**
+     * wheel spins, but not that much
+     */
     private void positionControl()
-    {
-        ColorMatchResult matchResult = colorMatcher.matchClosestColor(colorSensor.getColor());
+    {  //  Josh realizes after meeting - didnt account for offset ):  😎 
+        // if (match.color == BlueTarget) {
+        //     robotColor = "Blue";
+        //     fieldColor = "Red";
+        // } else if (match.color == RedTarget) {
+        //     robotColor = "Red";
+        //     fieldColor = "Blue";
+        // } else if (match.color == GreenTarget) {
+        //     robotColor = "Green";
+        //     fieldColor = "Yellow";
+        // } else if (match.color == YellowTarget) {
+        //     robotColor = "Yellow";
+        //     fieldColor= "Green";
+        // } else {
+        //     robotColor = "Unknown";
+        //     fieldColor = "Unknown";
+        // }
 
-        while(colorSensor.getColor() != matchResult.color)  //  Josh realizes after meeting - didnt account for offset
+        if(colorMatcher.matchClosestColor(colorSensor.getColor()).color != gameColor)
             panelMotor.set(1);
-
-        if (colorSensor.getColor() == gameColor)
+        else
             panelMotor.set(0);
     }
 
