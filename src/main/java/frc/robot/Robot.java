@@ -16,57 +16,78 @@
   Gabriel Rivera
   Fernando Tovar
   Matthew Metta
+
+
+  i'm just typing out other softrical members' names:
+  Shaurya
+  Surya
+  Harshal
 */
 
 package frc.robot;
 
-import com.revrobotics.CANSparkMax;
-import com.revrobotics.CANSparkMaxLowLevel;
+import java.io.IOException;
+import java.nio.file.Path;
 
-import edu.wpi.first.wpilibj.SpeedControllerGroup;
-import edu.wpi.first.wpilibj.drive.DifferentialDrive;
-import edu.wpi.first.wpilibj.geometry.Pose2d;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.TimedRobot;
-import edu.wpi.first.wpilibj.XboxController;
-import edu.wpi.first.wpilibj.GenericHID.Hand;
-
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.controller.RamseteController;
 import edu.wpi.first.wpilibj.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.kinematics.DifferentialDriveKinematics;
 import edu.wpi.first.wpilibj.kinematics.DifferentialDriveWheelSpeeds;
 import edu.wpi.first.wpilibj.trajectory.Trajectory;
+import edu.wpi.first.wpilibj.trajectory.TrajectoryUtil;
+
+import frc.robot.subsystems.Drivetrain;
 
 public class Robot extends TimedRobot {
-  static CANSparkMax lf = new CANSparkMax(Constants.LF_MOTOR_ID, CANSparkMaxLowLevel.MotorType.kBrushless);
-  static CANSparkMax lb = new CANSparkMax(Constants.LB_MOTOR_ID, CANSparkMaxLowLevel.MotorType.kBrushless);
-  static CANSparkMax rf = new CANSparkMax(Constants.RF_MOTOR_ID, CANSparkMaxLowLevel.MotorType.kBrushless);
-  static CANSparkMax rb = new CANSparkMax(Constants.RB_MOTOR_ID, CANSparkMaxLowLevel.MotorType.kBrushless);
+    
+  Timer autoTimer = new Timer();
 
-  static SpeedControllerGroup leftSide = new SpeedControllerGroup(lf, lb);
-  static SpeedControllerGroup rightSide = new SpeedControllerGroup(rf, rb);
+  Drivetrain drivetrain = new Drivetrain();
 
-  DifferentialDrive dt = new DifferentialDrive(leftSide, rightSide);
-  XboxController driverController = new XboxController(0);
+  //this 0.4 in the next line is the drivetrain wheelbase width
+  DifferentialDriveKinematics kinematics = new DifferentialDriveKinematics(0.4);  //  ***needs a look at... 
+  //robot characterization much? to add on the [...]Kinematics.Constraints stuff
 
-  RamseteController controller = new RamseteController();
   Trajectory trajectory;
-  Pose2d currentRobotPose;
-  DifferentialDriveKinematics kinematics;
+  RamseteController controller = new RamseteController();
+
+  @Override
+  public void robotInit()
+  {
+    try {
+      Path trajectoryPath = Filesystem.getDeployDirectory().toPath().resolve("PathWeaver/Paths/Red Init 1");
+      trajectory = TrajectoryUtil.fromPathweaverJson(trajectoryPath);
+    } catch (IOException ex) {
+      DriverStation.reportError("Unable to open trajectory: PathWeaver/Paths/Red Init 1", ex.getStackTrace());
+    }
+  }
+  
+  @Override
+  public void robotPeriodic()
+  {
+    drivetrain.updateOdometry();
+  }
+
+  @Override
+  public void autonomousInit()
+  {
+    autoTimer.start();
+  }
 
   @Override
   public void autonomousPeriodic()
   {
-    Trajectory.State goal = trajectory.sample(3.4); // sample the trajectory at 3.4 seconds from the beginning
-    ChassisSpeeds adjustedSpeeds = controller.calculate(currentRobotPose, goal);
+    Trajectory.State goal = trajectory.sample(autoTimer.get());
+    ChassisSpeeds adjustedSpeeds = controller.calculate(drivetrain.getPose(), goal);  //  should be the *current* robot pose
     
     DifferentialDriveWheelSpeeds wheelSpeeds = kinematics.toWheelSpeeds(adjustedSpeeds);
-    double left = wheelSpeeds.leftMetersPerSecond;
-    double right = wheelSpeeds.rightMetersPerSecond;
-  }
+    double leftSpeed = wheelSpeeds.leftMetersPerSecond;
+    double rightSpeed = wheelSpeeds.rightMetersPerSecond;
 
-  @Override
-  public void teleopPeriodic()
-  {
-    dt.arcadeDrive(driverController.getY(Hand.kLeft), driverController.getX(Hand.kRight));
+    drivetrain.driveBySpeeds(leftSpeed, rightSpeed); // *** should use PIDstuff to control by speed instead... CANSparkMax much?
   }
 }
