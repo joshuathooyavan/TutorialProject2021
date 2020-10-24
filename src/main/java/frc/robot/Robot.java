@@ -39,18 +39,16 @@ import edu.wpi.first.wpilibj.kinematics.DifferentialDriveKinematics;
 import edu.wpi.first.wpilibj.kinematics.DifferentialDriveWheelSpeeds;
 import edu.wpi.first.wpilibj.trajectory.Trajectory;
 import edu.wpi.first.wpilibj.trajectory.TrajectoryUtil;
-
 import frc.robot.subsystems.Drivetrain;
 
 public class Robot extends TimedRobot {
-    
+
   Timer autoTimer = new Timer();
 
   Drivetrain drivetrain = new Drivetrain();
 
-  //this 0.4 in the next line is the drivetrain wheelbase width
-  DifferentialDriveKinematics kinematics = new DifferentialDriveKinematics(0.4);  //  ***needs a look at... 
-  //robot characterization much? to add on the [...]Kinematics.Constraints stuff
+  // this 0.4 in the next line is the drivetrain wheelbase width
+  DifferentialDriveKinematics kinematics = new DifferentialDriveKinematics(0.4); // ***needs a look at...
 
   Trajectory trajectory;
   RamseteController controller = new RamseteController();
@@ -88,6 +86,6 @@ public class Robot extends TimedRobot {
     double leftSpeed = wheelSpeeds.leftMetersPerSecond;
     double rightSpeed = wheelSpeeds.rightMetersPerSecond;
 
-    drivetrain.driveBySpeeds(leftSpeed, rightSpeed); // *** should use PIDstuff to control by speed instead... CANSparkMax much?
+    drivetrain.driveBySpeeds(leftSpeed, rightSpeed);
   }
 }

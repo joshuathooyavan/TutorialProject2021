@@ -1,7 +1,9 @@
 package frc.robot.subsystems;
 
 import com.revrobotics.CANEncoder;
+import com.revrobotics.CANPIDController;
 import com.revrobotics.CANSparkMax;
+import com.revrobotics.ControlType;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 import edu.wpi.first.wpilibj.ADXRS450_Gyro;
@@ -22,8 +24,13 @@ public class Drivetrain
     CANSparkMax lf = new CANSparkMax(Constants.LF_MOTOR_ID, MotorType.kBrushless);
     CANSparkMax rf = new CANSparkMax(Constants.RF_MOTOR_ID, MotorType.kBrushless);
     
-    CANEncoder m_leftEncoder = new CANEncoder(lf);
-    CANEncoder m_rightEncoder = new CANEncoder(rf);
+    CANEncoder m_leftEncoder = lf.getEncoder();
+    CANEncoder m_rightEncoder = rf.getEncoder();
+
+    CANPIDController leftPID = lf.getPIDController();
+    CANPIDController rightPID = rf.getPIDController();
+        //  https://frc-pdr.readthedocs.io/en/latest/control/pid_control.html#tuning-methods oooh!
+        // ***Use the SPARK MAX Client application to set PID coeffs that will persist!
 
     private final SpeedControllerGroup m_leftMotors =
         new SpeedControllerGroup(lf, new CANSparkMax(Constants.LB_MOTOR_ID, MotorType.kBrushless));
@@ -38,9 +45,6 @@ public class Drivetrain
     // Odometry class for tracking robot pose
     private final DifferentialDriveOdometry m_odometry;
 
-    PIDController leftPID = new PIDController(1, 0, 0);   //  https://frc-pdr.readthedocs.io/en/latest/control/pid_control.html#tuning-methods oooh!
-    PIDController rightPID = new PIDController(1, 0, 0);
-
     /**
      * Creates a new DriveSubsystem.
      */
@@ -50,6 +54,8 @@ public class Drivetrain
 
         m_leftEncoder.setVelocityConversionFactor(Constants.kEncoderDistancePerPulse);
         m_rightEncoder.setVelocityConversionFactor(Constants.kEncoderDistancePerPulse);
+
+        m_rightEncoder.setInverted(true);   //  ***may or may not be necessary
 
         m_odometry = new DifferentialDriveOdometry(new Rotation2d(Math.toRadians(m_gyro.getAngle())));
     }
@@ -101,10 +107,8 @@ public class Drivetrain
      * @param rightSpeed speed of right side, duh lmao
      */
     public void driveBySpeeds(double leftSpeed, double rightSpeed)
-    {
-    this.tankDriveVolts(
-        leftPID.calculate(m_leftEncoder.getVelocity(), leftSpeed), 
-        rightPID.calculate(m_rightEncoder.getVelocity(), rightSpeed)
-        );  //  Maybe .getDistance works if this doesn't??? Test and find out
+    {      
+        leftPID.setReference(leftSpeed, ControlType.kVelocity);
+        rightPID.setReference(rightSpeed, ControlType.kVelocity);
     }
 }
