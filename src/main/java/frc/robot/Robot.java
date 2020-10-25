@@ -7,17 +7,10 @@
 
 package frc.robot;
 
-import edu.wpi.first.wpilibj.PWMVictorSPX;
-import edu.wpi.first.wpilibj.SpeedControllerGroup;
-import edu.wpi.first.wpilibj.drive.DifferentialDrive;
-
 import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.GenericHID.Hand;
-
-import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-
 import frc.robot.subsystems.*;
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -27,44 +20,23 @@ import frc.robot.subsystems.*;
  * project.
  */
 public class Robot extends TimedRobot {
-  private static final String kDefaultAuto = "Default";
-  private static final String kCustomAuto = "My Auto";
-  private String m_autoSelected;
-  private final SendableChooser<String> m_chooser = new SendableChooser<>();
-
-
-  private static PWMVictorSPX lf = new PWMVictorSPX(Constants.LF_MOTOR_ID);
-  private static PWMVictorSPX lb = new PWMVictorSPX(Constants.LB_MOTOR_ID);
-  private static PWMVictorSPX rf = new PWMVictorSPX(Constants.RF_MOTOR_ID);
-  private static PWMVictorSPX rb = new PWMVictorSPX(Constants.RB_MOTOR_ID);
-  
-  private static SpeedControllerGroup leftSide = new SpeedControllerGroup(lf, lb);
-  private static SpeedControllerGroup rightSide = new SpeedControllerGroup(rf, rb);
-
-  DifferentialDrive dt = new DifferentialDrive(leftSide, rightSide);
   XboxController driverController = new XboxController(0);
   XboxController operatorController = new XboxController(1);  
   
-  Lift liftControl;
-  Intake intakeControl;
-  Shooter shooterControl;
-  Feeder feedControl;
-  ControlPanel controlPanel;
-  /**
-   * This function is run when the robot is first started up and should be
-   * used for any initialization code.
-   */
-  @Override
-  public void robotInit() {
-    m_chooser.setDefaultOption("Default Auto", kDefaultAuto);
-    m_chooser.addOption("My Auto", kCustomAuto);
-    SmartDashboard.putData("Auto choices", m_chooser);
+  Lift liftControl = new Lift(operatorController);
+  Intake intakeControl = new Intake(operatorController);
+  Shooter shooterControl = new Shooter(operatorController);
+  Feeder feedControl = new Feeder(operatorController);
+  ControlPanel controlPanel = new ControlPanel(operatorController);
+  Limelight limelight = new Limelight();
+  Drivetrain dt = new Drivetrain(limelight);
 
-    liftControl = new Lift(operatorController);
-    intakeControl = new Intake(operatorController);
-    shooterControl = new Shooter(operatorController);
-    feedControl = new Feeder(operatorController);
-    controlPanel = new ControlPanel(operatorController);
+  Timer autoTimer = new Timer();
+
+  @Override
+  public void robotInit()
+  {
+
   }
 
   @Override
@@ -72,48 +44,36 @@ public class Robot extends TimedRobot {
   {
     if(controlPanel.gameColor == null)
       controlPanel.getGameColor();
+    
+    limelight.Update();
   }
 
-  /**
-   * This autonomous (along with the chooser code above) shows how to select
-   * between different autonomous modes using the dashboard. The sendable
-   * chooser code works with the Java SmartDashboard. If you prefer the
-   * LabVIEW Dashboard, remove all of the chooser code and uncomment the
-   * getString line to get the auto name from the text box below the Gyro
-   *
-   * <p>You can add additional auto modes by adding additional comparisons to
-   * the switch structure below with additional strings. If using the
-   * SendableChooser make sure to add them to the chooser code above as well.
-   */
   @Override
-  public void autonomousInit() {
-    m_autoSelected = m_chooser.getSelected();
-    // m_autoSelected = SmartDashboard.getString("Auto Selector", kDefaultAuto);
-    System.out.println("Auto selected: " + m_autoSelected);
+  public void autonomousInit()
+  {
+    autoTimer.start();
   }
 
-  /**
-   * This function is called periodically during autonomous.
-   */
   @Override
-  public void autonomousPeriodic() {
-    switch (m_autoSelected) {
-      case kCustomAuto:
-        // Put custom auto code here
-        break;
-      case kDefaultAuto:
-      default:
-        // Put default auto code here
-        break;
+  public void autonomousPeriodic()
+  {
+    double time = autoTimer.get();
+    
+    if (0 < time && time < 10) 
+    {
+      dt.aim(ShotRange.kInitLine);
+      shooterControl.shoot(ShotRange.kInitLine);
+    }
+    else if (10 < time && time < 15) 
+    {
+      dt.arcadeDrive(-0.7, 0.2);
     }
   }
 
-  /**
-   * This function is called periodically during operator control.
-   */
   @Override
   public void teleopPeriodic()
   {
+    
     dt.arcadeDrive(driverController.getY(Hand.kLeft), driverController.getX(Hand.kRight));
   }
 }
