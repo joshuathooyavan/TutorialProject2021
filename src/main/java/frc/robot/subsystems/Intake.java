@@ -1,34 +1,24 @@
 package frc.robot.subsystems;
 
-import edu.wpi.first.wpilibj.PWMVictorSPX;
-import edu.wpi.first.wpilibj.XboxController;
+import com.ctre.phoenix.motorcontrol.can.TalonSRX;
+import com.ctre.phoenix.motorcontrol.ControlMode;
+
 import frc.robot.Constants;
 
-public class Intake {
-    XboxController controller;
-    PWMVictorSPX intakeMotor;
+public class Intake extends TalonSRX {
     
-    /** 
-     * Constructs the intake motor along with the Xbox Controller.
-     */
-    public Intake(XboxController x) {
-        controller = x;
-        intakeMotor = new PWMVictorSPX(Constants.INTAKE_MOTOR_ID);
+    public Intake()
+    {
+        super(Constants.INTAKE_MOTOR_ID);
     }
 
-    public void teleOp()    
+    public void intake()
     {
-        //#region Intake
-        if(controller.getXButton())
-            intakeMotor.set(1);
-        else if(controller.getYButton())
-            intakeMotor.set (-1);
-        else
-            intakeMotor.set (0);
-        //#endregion Intake
+        this.set(ControlMode.PercentOutput, 1);
+    }
 
-        //#region Hopper
-        
-        //#endregion Hopper
+    public void intake(double power)
+    {
+        this.set(ControlMode.PercentOutput, power);
     }
 }

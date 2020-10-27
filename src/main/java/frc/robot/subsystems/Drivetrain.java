@@ -1,24 +1,27 @@
 package frc.robot.subsystems;
 
-import edu.wpi.first.wpilibj.PWMVictorSPX;
+import com.revrobotics.CANSparkMax;
+import com.revrobotics.CANSparkMaxLowLevel.MotorType;
+
 import edu.wpi.first.wpilibj.SpeedControllerGroup;
 import edu.wpi.first.wpilibj.controller.PIDController;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import frc.robot.Constants;
+import frc.robot.Constants.ShotRange;
 
 public class Drivetrain
 {   
-    PWMVictorSPX lf = new PWMVictorSPX(Constants.LF_MOTOR_ID);
-    PWMVictorSPX lb = new PWMVictorSPX(Constants.LB_MOTOR_ID);
-    PWMVictorSPX rf = new PWMVictorSPX(Constants.RF_MOTOR_ID);
-    PWMVictorSPX rb = new PWMVictorSPX(Constants.RB_MOTOR_ID);
+    CANSparkMax lf = new CANSparkMax(Constants.LF_MOTOR_ID, MotorType.kBrushless);
+    CANSparkMax lb = new CANSparkMax(Constants.LB_MOTOR_ID, MotorType.kBrushless);
+    CANSparkMax rf = new CANSparkMax(Constants.RF_MOTOR_ID, MotorType.kBrushless);
+    CANSparkMax rb = new CANSparkMax(Constants.RB_MOTOR_ID, MotorType.kBrushless);
 
     SpeedControllerGroup leftSide = new SpeedControllerGroup(lf, lb);
     SpeedControllerGroup rightSide = new SpeedControllerGroup(rf, rb);    
     
     DifferentialDrive dt = new DifferentialDrive(leftSide, rightSide);
     
-    PIDController aimPID = new PIDController(1/27, 0, 0);   //  figure out D terms on both of these lol
+    PIDController aimPID = new PIDController(1/27, 0, 0);   //  TUNE ME
     PIDController distancePID = new PIDController(1/20.5, 0, 0);
 
     Limelight limelight;
