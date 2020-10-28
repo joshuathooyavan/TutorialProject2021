@@ -12,7 +12,6 @@ import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.GenericHID.Hand;
 
-import frc.robot.Constants.ShotRange;
 import frc.robot.subsystems.*;
 
 //  TODO: Tell ShuffleBoard EVERYTHING - numBalls, errors, robot status, etc
@@ -24,11 +23,12 @@ public class Robot extends TimedRobot
   XboxController operatorController = new XboxController(1);
 
   Lift lift = new Lift();
-  Shooter shooter = new Shooter();
   Feeder feeder = new Feeder();
   ControlPanel controlPanel = new ControlPanel();
-  Drivetrain drivetrain = new Drivetrain(new Limelight());
-  
+  Limelight limelight = new Limelight();
+  Drivetrain drivetrain = new Drivetrain(limelight);
+  Shooter shooter = new Shooter(limelight);
+
   Autonomous auto = new Autonomous(drivetrain, shooter, feeder);
 
   @Override
@@ -53,23 +53,17 @@ public class Robot extends TimedRobot
       drivetrain.arcadeDrive(driverController.getY(Hand.kLeft), driverController.getX(Hand.kRight));  //  Driver control
     else
     {
-      if (wantTrenchShot)  //  priority to trench shot in case operator hits both buttons
-      {
-        drivetrain.aim(ShotRange.kTrench);
-        shooter.shoot(ShotRange.kTrench);
-      } else if (wantInitLineShot)
-      {
-        drivetrain.aim(ShotRange.kInitLine);
-        shooter.shoot(ShotRange.kInitLine);
-      }
+      drivetrain.aim();
+      shooter.shoot();
     }
+
     //  TODO: find out suitable power settings
     
     if(operatorController.getBButton())
       feeder.addBall();
-    // else
-      
-      feeder.reverse(); //  TODO: redo controls to include a reverse button for jams or overintake
+    
+    //  TODO: redo controls to include a reverse button for jams or overintake -- reverse below
+    feeder.setIntakeAndHop(-1); //  TODO: tune reverseHop speed
     
     switch(operatorController.getPOV(0))
     {

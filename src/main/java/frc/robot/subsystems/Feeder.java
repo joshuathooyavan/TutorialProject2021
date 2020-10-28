@@ -53,20 +53,20 @@ public class Feeder
                 intake.set(PercentOutput, 1);
                 break;
             case 1: //  The second is stored in the hopper - note that every ball's position gets shifted
-                intakeAndHop();
+                setIntakeAndHop();
                 break;
             case 2: //  The third will now be stored in the feeder - as will the rest
-                intakeAndHop();
+                setIntakeAndHop();
                 while(feederSensors[0].get() != true)
                     feederMotor.set(PercentOutput, 1);
                 break;
             case 3:
-                intakeAndHop();
+                setIntakeAndHop();
                 while(feederSensors[1].get() != true)
                     feederMotor.set(PercentOutput, 1);
                 break;
             case 4:
-                intakeAndHop();
+                setIntakeAndHop();
                 while(feederSensors[2].get() != true)
                     feederMotor.set(PercentOutput, 1);
                 break;
@@ -78,10 +78,15 @@ public class Feeder
         numBalls++;
     }
     
-    private void intakeAndHop()
-    {        
-        intake.set(PercentOutput, 1);   //  TODO: tune intake speed
-        hopper.set(PercentOutput, 1);   //  TODO: tune hopper speed
+    public void setIntakeAndHop()
+    {
+        setIntakeAndHop(1);   //  TODO: tune intake and hopper speeds
+    }
+
+    public void setIntakeAndHop(double value)
+    {
+        intake.set(PercentOutput, value);
+        hopper.set(PercentOutput, value);
     }
 
     public void feedForShooting()
@@ -91,10 +96,12 @@ public class Feeder
         numBalls--;
         //  TODO: Use the sensors to check if we've shot all de balls
     }
-
-    public void reverse()
+    
+    public void setIntake(boolean value)
     {
-        //  TODO: implement reverse
+        if(value)
+            intake.set(PercentOutput, 1);
+        else
+            intake.set(PercentOutput, 0);
     }
-
 }

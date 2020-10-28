@@ -30,30 +30,4 @@ public class Constants
 
     // Constant encoder... thing...
     public static double kEncoderDistancePerPulse = 69_420;
-
-    /** 
-     * hahahahaha enum class heehahah
-     * 
-     * https://www.programiz.com/java-programming/enums
-     * https://www.programiz.com/java-programming/enum-constructor
-     */
-    public enum ShotRange
-    {
-        //  Format: kNameOfRange(requiredTy, requiredRPM)
-        
-        kInitLine(69420, 1250), //  10 foot shot TODO: tune tY and RPMs
-        kTrench(69420, 1600);   //  18 foot shot
-
-        public double requiredTy, requiredRPM;
-
-        private ShotRange(double reqTy, double reqRPM)
-        {
-            requiredTy = reqTy;
-            requiredRPM = reqRPM;
-        }
-    }
-    /* TODO: shoot aim regression
-        Also, we should try that regression thing that we came up with on Friday morning before comp day...
-            That would let us shoot from any given distance
-    */
 }

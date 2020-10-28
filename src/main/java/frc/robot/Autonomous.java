@@ -14,7 +14,6 @@ import edu.wpi.first.wpilibj.kinematics.DifferentialDriveWheelSpeeds;
 import edu.wpi.first.wpilibj.trajectory.Trajectory;
 import edu.wpi.first.wpilibj.trajectory.TrajectoryUtil;
 
-import frc.robot.Constants.ShotRange;
 import frc.robot.subsystems.*;
 
 public class Autonomous
@@ -60,19 +59,20 @@ public class Autonomous
     public void init()
     {
         autoTimer.start();
+        feeder.setIntake(true);
     }
 
     public void periodic()
     {
-        if (autoTimer.get() < 4) AimShoot(ShotRange.kInitLine);
+        if (autoTimer.get() < 4) AimShoot();
         else if (autoTimer.get() < 11) Traj(autoTimer.get() - 4);
-        else if (autoTimer.get() < 15) AimShoot(ShotRange.kTrench);
+        else if (autoTimer.get() < 15) AimShoot();
     }
 
-    private void AimShoot(ShotRange range)
+    private void AimShoot()
     {
-        drivetrain.aim(range);
-        shooter.shoot(range);
+        drivetrain.aim();
+        shooter.shoot();
         feeder.feedForShooting();
     }
 

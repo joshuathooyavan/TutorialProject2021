@@ -18,7 +18,6 @@ import edu.wpi.first.wpilibj.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.kinematics.DifferentialDriveOdometry;
 
 import frc.robot.Constants;
-import frc.robot.Constants.ShotRange;
 
 
 /**
@@ -45,7 +44,6 @@ public class Drivetrain
     DifferentialDrive dt = new DifferentialDrive(leftSide, rightSide);
     
     PIDController aimPID = new PIDController(1/27, 0, 0);   // TODO:  TUNE ME
-    PIDController distancePID = new PIDController(1/20.5, 0, 0);
 
     Limelight limelight;
     
@@ -74,12 +72,10 @@ public class Drivetrain
         dt.arcadeDrive(xSpeed, zRotation);
     }
 
-    public void aim(ShotRange range)
+    public void aim()
     {
-        dt.arcadeDrive(
-            distancePID.calculate(limelight.getTy(), range.requiredTy),
-            aimPID.calculate(limelight.getTx(), 0)
-            );
+        if (limelight.getTv())
+            dt.arcadeDrive(0, aimPID.calculate(limelight.getTx(), 0));
     }    
 
     /**
@@ -98,8 +94,7 @@ public class Drivetrain
      */
     public void updateOdometry()
     {
-        // Update the odometry in the periodic block
-        m_odometry.update(new Rotation2d(Math.toDegrees(m_gyro.getAngle())), m_leftEncoder.getPosition(),  //  need to make sure getPosition is same as getDistance
+        m_odometry.update(new Rotation2d(Math.toDegrees(m_gyro.getAngle())), m_leftEncoder.getPosition(),  //  TODO: make sure getPosition is same as getDistance
                             m_rightEncoder.getPosition());
     }
 
