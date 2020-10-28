@@ -3,6 +3,7 @@ package frc.robot.subsystems;
 import java.util.HashMap;
 import java.util.List;
 
+import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 
 import edu.wpi.first.wpilibj.DigitalInput;
@@ -15,6 +16,9 @@ import frc.robot.Constants;
  * @author Albert Ma
  * @author Colin Wong
  * @author Ryan Hirasaki
+ * 
+ * 
+ * This is Academy HS 5431's code! :writing_hand:
  */
 public class Feeder2 extends SubsystemBase {
 	public enum FeederStateTeleop {
@@ -24,7 +28,7 @@ public class Feeder2 extends SubsystemBase {
 	public static boolean ENABLE_AUTO_FEEDER = true; // Should Be true by default
 
 	WPI_TalonFX feed;
-	HashMap<Integer, DigitalInput> dioSensors = new HashMap<Integer, DigitalInput>(Constants.DIGITAL_INPUT_IDS.length);
+	HashMap<Integer, DigitalInput> dioSensors = new HashMap<Integer, DigitalInput>(Constants.FEEDER_SENSOR_IDS.length);
 
 	double feedSpeed, feedSpeedOffset = 0;
 	int stopCount;
@@ -51,16 +55,16 @@ public class Feeder2 extends SubsystemBase {
 
 		feed = feeder;
 
-		feed.setInverted(Constants.SHOOTER_FEEDER_REVERSE);
-		feed.setNeutralMode(Constants.SHOOTER_FEEDER_NEUTRALMODE);
+		feed.setInverted(true);//Constants.SHOOTER_FEEDER_REVERSE);
+		feed.setNeutralMode(NeutralMode.Brake);//Constants.SHOOTER_FEEDER_NEUTRALMODE);
 
-		dioSensors.put(0, new DigitalInput(Constants.DIGITAL_INPUT_IDS[0]));
-		dioSensors.put(1, new DigitalInput(Constants.DIGITAL_INPUT_IDS[1]));
-		dioSensors.put(2, new DigitalInput(Constants.DIGITAL_INPUT_IDS[2]));
-		dioSensors.put(3, new DigitalInput(Constants.DIGITAL_INPUT_IDS[3]));
+		dioSensors.put(0, new DigitalInput(Constants.FEEDER_SENSOR_IDS[0]));
+		dioSensors.put(1, new DigitalInput(Constants.FEEDER_SENSOR_IDS[1]));
+		dioSensors.put(2, new DigitalInput(Constants.FEEDER_SENSOR_IDS[2]));
+		dioSensors.put(3, new DigitalInput(Constants.FEEDER_SENSOR_IDS[3]));
 
 		// dioSensors.forEach((num, sensor) -> {
-		// sensor = new DigitalInput(Constants.DIGITAL_INPUT_IDS[num]);
+		// sensor = new DigitalInput(Constants.FEEDER_SENSOR_IDS[num]);
 		// });
 
 		resetVars();
@@ -76,7 +80,7 @@ public class Feeder2 extends SubsystemBase {
 
 		feederLoadAndShoot();
 
-		if (15 <= pdp.getCurrent(Constants.FEEDER_PDP_SLOT)) {
+		if (15 <= pdp.getCurrent(1/*Constants.FEEDER_PDP_SLOT*/)) {
 			// Slow down indexer
 			feedSpeedOffset = 0.2;
 		} else {
@@ -158,7 +162,7 @@ public class Feeder2 extends SubsystemBase {
             case LOAD: // Run the feeder for a certain amount of time after it detects a ball entering.
                 if (System.currentTimeMillis() < ballStopTime) { 
                     if (ballCount < 3) {
-                        feed.set(Constants.SHOOTER_FEEDER_DEFAULT_SPEED - feedSpeedOffset); } else {
+                        feed.set(694200/*Constants.SHOOTER_FEEDER_DEFAULT_SPEED*/ - feedSpeedOffset); } else {
                         // Runs if there are three balls. 
                         feed.set(feedSpeed - feedSpeedOffset); } }
                     else {
@@ -167,14 +171,14 @@ public class Feeder2 extends SubsystemBase {
                     } // After it loads three balls, it will continue to the next stage.
                     if (ballCount >= 3) { 
                         _state = FeederStateTeleop.COMPRESS;
-                        upStopTime = System.currentTimeMillis() + Constants.SHOOTER_FEEDER_UP_DELAY;
+                        upStopTime = System.currentTimeMillis() + 69420000/* Constants.SHOOTER_FEEDER_UP_DELAY*/;
                     } break; 
             case COMPRESS: // Move on after UP_DELAY ms. 
                 if (System.currentTimeMillis() < upStopTime) { // Move the feeder up.
-                    feed.set(Constants.SHOOTER_FEEDER_DEFAULT_SPEED - feedSpeedOffset); } 
+                    feed.set(694200/*Constants.SHOOTER_FEEDER_DEFAULT_SPEED*/ - feedSpeedOffset); } 
                 else {
                     _state = FeederStateTeleop.AUTO_REVERSE; finalStopTime =
-                    System.currentTimeMillis() + Constants.SHOOTER_FEEDER_DOWN_DELAY; 
+                    System.currentTimeMillis() + 333333/*Constants.SHOOTER_FEEDER_DOWN_DELAY*/; 
                 } break;
             case AUTO_REVERSE: // Move on after DOWN_DELAY ms OR the balls clear the shoot sensor.
                 if (System.currentTimeMillis() < finalStopTime || !getValueOfDIOSensor(3)) { // Reverse the feeder.

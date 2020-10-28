@@ -1,6 +1,6 @@
 package frc.robot.subsystems;
 
-import com.ctre.phoenix.motorcontrol.ControlMode;
+import static com.ctre.phoenix.motorcontrol.ControlMode.PercentOutput;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.revrobotics.ColorMatch;
 import com.revrobotics.ColorSensorV3;
@@ -23,7 +23,6 @@ public class ControlPanel
     private final Color kYellowTarget = ColorMatch.makeColor(0.361, 0.524, 0.113);
     
     private Timer timer = new Timer();
-    private boolean rotationControlHasAlreadyStarted;
     
     public ControlPanel()
     {
@@ -38,20 +37,13 @@ public class ControlPanel
      */
     public void rotationControl()
     {
-        double startTime = 0.0;
-        if(!rotationControlHasAlreadyStarted) {
-            timer.start();
-            panelMotor.set(ControlMode.PercentOutput, 0.5);
-            startTime = timer.get();
-            rotationControlHasAlreadyStarted = true;
-        }
+        timer.start();
         
-        //"timeInterval" would be some amount we experiment for
-        if(timer.get() - startTime > 20.0 /*Needs to be tested for later*/ ) {
-            timer.stop();
-            panelMotor.set(ControlMode.PercentOutput, 0);
-            rotationControlHasAlreadyStarted = false;
-        }
+        while(timer.get() < 20.0)   //  TODO: Tune time to rotate ctrlpanel
+            panelMotor.set(PercentOutput, 1);
+
+        timer.stop();
+        panelMotor.set(PercentOutput, 0);
     }
     
     /**
@@ -60,9 +52,10 @@ public class ControlPanel
     public void positionControl()
     {
         if(colorMatcher.matchClosestColor(colorSensor.getColor()).color != getGameColor())
-            panelMotor.set(ControlMode.PercentOutput, 1);
+            panelMotor.set(PercentOutput, 1);
         else
-            panelMotor.set(ControlMode.PercentOutput, 0);
+            panelMotor.set(PercentOutput, 0);
+            //  TODO: merge xperi's newer code here
     }
 
     /**
