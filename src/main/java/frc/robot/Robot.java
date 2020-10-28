@@ -16,6 +16,7 @@ import frc.robot.Constants.ShotRange;
 import frc.robot.subsystems.*;
 
 //  TODO: Tell ShuffleBoard EVERYTHING - numBalls, errors, robot status, etc
+//  TODO: Deal with constants - maybe shift ALL of them into Constants.java?
   
 public class Robot extends TimedRobot
 {

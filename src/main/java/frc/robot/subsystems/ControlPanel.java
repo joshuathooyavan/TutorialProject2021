@@ -2,6 +2,8 @@ package frc.robot.subsystems;
 
 import static com.ctre.phoenix.motorcontrol.ControlMode.PercentOutput;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
+import java.util.ArrayList;
+
 import com.revrobotics.ColorMatch;
 import com.revrobotics.ColorSensorV3;
 
@@ -22,6 +24,10 @@ public class ControlPanel
     private final Color kRedTarget = ColorMatch.makeColor(0.561, 0.232, 0.114);
     private final Color kYellowTarget = ColorMatch.makeColor(0.361, 0.524, 0.113);
     
+    private final ArrayList<Color> colors = new ArrayList<>();
+    
+    public Color gameColor = null;
+
     private Timer timer = new Timer();
     
     public ControlPanel()
@@ -30,6 +36,10 @@ public class ControlPanel
         colorMatcher.addColorMatch(kGreenTarget);
         colorMatcher.addColorMatch(kRedTarget);
         colorMatcher.addColorMatch(kYellowTarget);
+        colors.add(kRedTarget);
+        colors.add(kGreenTarget);
+        colors.add(kBlueTarget);
+        colors.add(kYellowTarget);
     }
 
     /**
@@ -51,11 +61,13 @@ public class ControlPanel
      */
     public void positionControl()
     {
-        if(colorMatcher.matchClosestColor(colorSensor.getColor()).color != getGameColor())
-            panelMotor.set(PercentOutput, 1);
+        //this is the color the robot sees - which is offset from what the field sees
+        Color color = colors.get((colors.indexOf(gameColor) + 2)  % colors.size()); //the modulo is so that if it's above the length, it loops back to the beginning of the array
+        
+        if(colorMatcher.matchClosestColor(colorSensor.getColor()).color != color)
+            panelMotor.set(PercentOutput, 1);   //  TODO: Tune ctrlpanel speeds
         else
             panelMotor.set(PercentOutput, 0);
-            //  TODO: merge xperi's newer code here
     }
 
     /**

@@ -52,7 +52,7 @@ public class Constants
             requiredRPM = reqRPM;
         }
     }
-    /* TODO:
+    /* TODO: shoot aim regression
         Also, we should try that regression thing that we came up with on Friday morning before comp day...
             That would let us shoot from any given distance
     */
