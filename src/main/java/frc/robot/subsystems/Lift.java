@@ -3,6 +3,7 @@ package frc.robot.subsystems;
 import com.revrobotics.CANPIDController;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.ControlType;
+
 import static com.revrobotics.CANSparkMaxLowLevel.MotorType.kBrushless;
 
 import frc.robot.Constants;
@@ -23,5 +24,11 @@ public class Lift
     {
         pid.setReference(69_420, ControlType.kPosition);
         //  TODO: Tune to find how many ticks or whatever measurement it needs (Could use conversion again)
+    }
+
+
+    public void down()
+    {
+        leftMotor.set(-.5);
     }
 }

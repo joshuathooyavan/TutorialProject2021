@@ -16,7 +16,7 @@ public class Feeder
 
     TalonSRX feederMotor = new TalonSRX(Constants.FEEDER_MOTOR_ID);
     
-    DigitalInput[] feederSensors;
+    DigitalInput[] feederSensors = new DigitalInput[4];
 
     int numBalls = 0;
 
@@ -57,20 +57,27 @@ public class Feeder
                 break;
             case 2: //  The third will now be stored in the feeder - as will the rest
                 setIntakeAndHop();
-                while(feederSensors[0].get() != true)
+                if(feederSensors[0].get() != true)
                     feederMotor.set(PercentOutput, 1);
+                else 
+                    feederMotor.set(PercentOutput, 0);
                 break;
             case 3:
                 setIntakeAndHop();
-                while(feederSensors[1].get() != true)
+                if(feederSensors[1].get() != true)
                     feederMotor.set(PercentOutput, 1);
+                else 
+                    feederMotor.set(PercentOutput, 0);
                 break;
             case 4:
                 setIntakeAndHop();
-                while(feederSensors[2].get() != true)
+                if(feederSensors[2].get() != true)
                     feederMotor.set(PercentOutput, 1);
+                else 
+                    feederMotor.set(PercentOutput, 0);
                 break;
             case 5: //  Don't take any more balls in!
+                feederMotor.set(PercentOutput, 0);
             default:    //  Something must have gone wrong... tell shuffleboard
                 break;
         }
