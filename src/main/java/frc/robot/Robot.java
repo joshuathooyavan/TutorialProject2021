@@ -8,7 +8,7 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj.TimedRobot;
-
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.GenericHID.Hand;
 
@@ -29,19 +29,39 @@ public class Robot extends TimedRobot
   Drivetrain drivetrain = new Drivetrain(limelight);
   Shooter shooter = new Shooter(limelight);
 
-  Autonomous auto = new Autonomous(drivetrain, shooter, feeder);
+  // Autonomous auto = new Autonomous(drivetrain, shooter, feeder);
+  Timer autoTimer = new Timer();
 
   @Override
-  public void robotInit()  { auto.robotInit(); }
+  public void robotInit()  {  }
   
   @Override
   public void robotPeriodic()  { drivetrain.updateOdometry(); }
 
   @Override
-  public void autonomousInit()  { auto.init(); }
+  public void autonomousInit()
+  {    
+    autoTimer.start();
+    feeder.setIntake(true);
+  }
 
   @Override
-  public void autonomousPeriodic()  { auto.periodic(); }
+  public void autonomousPeriodic()
+  {    
+    if (autoTimer.get() < 4)
+    {      
+      drivetrain.aim();
+      shooter.shoot();
+      feeder.feedForShooting();
+    } else if (autoTimer.get() < 11) 
+      drivetrain.followTrajectory(autoTimer.get() - 4);
+    else if (autoTimer.get() < 15)
+    {      
+      drivetrain.aim();
+      shooter.shoot();
+      feeder.feedForShooting();
+    }
+  }
 
   @Override
   public void teleopPeriodic()

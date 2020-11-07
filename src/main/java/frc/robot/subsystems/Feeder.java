@@ -96,6 +96,9 @@ public class Feeder
         hopper.set(PercentOutput, value);
     }
 
+    /**
+     * has to be called periodically lol
+     */
     public void feedForShooting()
     {
         feederMotor.set(PercentOutput, 0.7);  //  TODO: tune feed speeds

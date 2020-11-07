@@ -1,21 +1,31 @@
 package frc.robot.subsystems;
 
+import static com.revrobotics.CANSparkMaxLowLevel.MotorType.kBrushless;
+
+import java.io.IOException;
+import java.nio.file.Path;
+
 import com.revrobotics.CANEncoder;
 import com.revrobotics.CANPIDController;
 import com.revrobotics.CANSparkMax;
-import static com.revrobotics.CANSparkMaxLowLevel.MotorType.kBrushless;
 import com.revrobotics.ControlType;
 
-import edu.wpi.first.wpilibj.interfaces.Gyro;
 import edu.wpi.first.wpilibj.ADXRS450_Gyro;
-
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.SpeedControllerGroup;
 import edu.wpi.first.wpilibj.controller.PIDController;
+import edu.wpi.first.wpilibj.controller.RamseteController;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
-
 import edu.wpi.first.wpilibj.geometry.Pose2d;
 import edu.wpi.first.wpilibj.geometry.Rotation2d;
+import edu.wpi.first.wpilibj.interfaces.Gyro;
+import edu.wpi.first.wpilibj.kinematics.ChassisSpeeds;
+import edu.wpi.first.wpilibj.kinematics.DifferentialDriveKinematics;
 import edu.wpi.first.wpilibj.kinematics.DifferentialDriveOdometry;
+import edu.wpi.first.wpilibj.kinematics.DifferentialDriveWheelSpeeds;
+import edu.wpi.first.wpilibj.trajectory.Trajectory;
+import edu.wpi.first.wpilibj.trajectory.TrajectoryUtil;
 
 import frc.robot.Constants;
 
@@ -47,10 +57,16 @@ public class Drivetrain
 
     Limelight limelight;
     
-    Gyro m_gyro = new ADXRS450_Gyro();
+    Gyro gyro = new ADXRS450_Gyro();
 
     // Odometry class for tracking robot pose
-    DifferentialDriveOdometry m_odometry;
+    DifferentialDriveOdometry odometry;
+    
+    Trajectory trajectory;
+    RamseteController controller = new RamseteController();
+    // this 0.5 in the next line is the drivetrain wheelbase width
+    DifferentialDriveKinematics kinematics = new DifferentialDriveKinematics(0.5); // ***needs a look at...
+
 
     public Drivetrain(Limelight l)
     {
@@ -64,7 +80,23 @@ public class Drivetrain
 
         // m_rightEncoder.setInverted(true);
 
-        m_odometry = new DifferentialDriveOdometry(new Rotation2d(Math.toRadians(m_gyro.getAngle())));
+        odometry = new DifferentialDriveOdometry(new Rotation2d(Math.toRadians(gyro.getAngle())));
+        
+        /*
+        * --- WARNING!!! ---
+        * The following code means that you HAVE to set up the DS in the SAME spot the robot is placed, 
+        * because the DS position determines the chosen trajectory.
+        * Seems normal but just specifying... When testing, just choose it in the DS app.
+        */
+        String path = Integer.toString(DriverStation.getInstance().getLocation());
+
+        // OPENING TRAJECTORY
+        try {
+            Path trajectoryPath = Filesystem.getDeployDirectory().toPath().resolve("PathWeaver/output/" + path);
+            trajectory = TrajectoryUtil.fromPathweaverJson(trajectoryPath);
+        } catch (IOException ex) {
+            DriverStation.reportError("Unable to open trajectory: " + path, ex.getStackTrace());
+        }
     }
 
     public void arcadeDrive(double xSpeed, double zRotation)
@@ -76,15 +108,17 @@ public class Drivetrain
     {
         if (limelight.getTv())
             dt.arcadeDrive(0, aimPID.calculate(limelight.getTx(), 0));
-    }    
+    }
 
-    /**
-     * Sets the drivetrain to a given speed.
-     * @param leftSpeed speed of left side
-     * @param rightSpeed speed of right side, duh lmao
-     */
-    public void driveBySpeeds(double leftSpeed, double rightSpeed)
-    {      
+    public void followTrajectory(double time)
+    {
+        Trajectory.State goal = trajectory.sample(time);
+        ChassisSpeeds adjustedSpeeds = controller.calculate(this.getPose(), goal);  //  should be the *current* robot pose
+
+        DifferentialDriveWheelSpeeds wheelSpeeds = kinematics.toWheelSpeeds(adjustedSpeeds);
+        double leftSpeed = wheelSpeeds.leftMetersPerSecond;
+        double rightSpeed = wheelSpeeds.rightMetersPerSecond;
+
         leftPID.setReference(leftSpeed, ControlType.kVelocity);
         rightPID.setReference(rightSpeed, ControlType.kVelocity);
     }
@@ -94,7 +128,7 @@ public class Drivetrain
      */
     public void updateOdometry()
     {
-        m_odometry.update(new Rotation2d(Math.toDegrees(m_gyro.getAngle())), m_leftEncoder.getPosition(),  //  TODO: make sure getPosition is same as getDistance
+        odometry.update(new Rotation2d(Math.toDegrees(gyro.getAngle())), m_leftEncoder.getPosition(),  //  TODO: make sure getPosition is same as getDistance
                             m_rightEncoder.getPosition());
     }
 
@@ -104,6 +138,6 @@ public class Drivetrain
      * @return The pose.
      */
     public Pose2d getPose() {
-        return m_odometry.getPoseMeters();
+        return odometry.getPoseMeters();
     }
 }
